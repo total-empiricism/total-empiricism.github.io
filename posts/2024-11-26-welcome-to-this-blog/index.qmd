@@ -1,0 +1,29 @@
+---
+title: "Welcome to this blog"
+author: ""
+description: ""
+date: "2024-11-26"
+categories: []
+bibliography: references.bib
+draft: true
+---
+The validity of statistical inferences has been under debate since the inception of statistics [e.g. @berkson_difficulties_1938]. Contemporary statistical inferences can be summarized by the "null ritual" [@gigerenzer_mindless_2004]:
+
+1. formulate your working hypothesis, e.g. male humans are (on average) heavier than female humans;
+2. set up a statistical null hypothesis, e.g. male humans have the same weight as female humans (on average);
+3. choose an appropriate test statistic, e.g. the $t$-statistic;
+4. choose its distribution under the null hypothesis, e.g. the (central) $t$-distribution;
+5. specify a significance level of 5% to either reject ($p \le 5\%$) or accept ($p > 5\%$) the null hypothesis;
+6. gather data;
+6. determine the $p$-value and compare it with the significance level
+7. only if you reject the null hypothesis accept the alternative, your working, hypothesis and claim: "male humans are (on average) heavier than female humans ($p \le 5%$ one-sided $t$-test)".
+
+This is pretty standard, so what is the problem? The problem is a fundamental one: the choice of the distribution of the test statistic under the null hypothesis depends on how the data is distributed [see e.g. the derivation of the $t$-distribution @student_probable_1908]. 
+
+$$
+ \mathfrak{p}
+$$
+
+
+
+At a fundamental level the criticism revolves around the validity of distributional assumptions underlying essentially every statistical hypothesis testing procedure.

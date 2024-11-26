@@ -2,8 +2,10 @@ project:
   type: website
 
 website:
-  title: "total-empiricism"
+  title: "Total Empiricism"
+  site-url: https://total-empiricism.github.io/
   navbar:
+    logo: totemLogo.png
     right:
       - about.qmd
       - icon: github

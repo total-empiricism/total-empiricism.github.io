@@ -1,5 +1,5 @@
 ---
-title: "total-empiricism"
+title: "Total Empiricism Blog"
 listing:
   contents: posts
   sort: "date desc"
