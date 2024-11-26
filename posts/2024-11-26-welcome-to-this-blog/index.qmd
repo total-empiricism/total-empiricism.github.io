@@ -24,6 +24,7 @@ $$
  \mathfrak{p}
 $$
 
+asd
 
 
 At a fundamental level the criticism revolves around the validity of distributional assumptions underlying essentially every statistical hypothesis testing procedure.
