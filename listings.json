@@ -1,6 +1,8 @@
 [
   {
     "listing": "/index.html",
-    "items": []
+    "items": [
+      "/posts/2024-11-26-welcome-to-this-blog/index.html"
+    ]
   }
 ]
