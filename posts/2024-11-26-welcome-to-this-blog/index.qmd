@@ -1,30 +1,17 @@
 ---
 title: "Welcome to this blog"
-author: ""
+author: "Ho-Ryun Chung"
 description: ""
-date: "2024-11-26"
+date: "2024-11-27"
 categories: []
 bibliography: references.bib
-draft: true
+draft: false
 ---
 
-The validity of statistical inferences has been under debate since the inception of statistics [e.g. @berkson_difficulties_1938]. Contemporary statistical inferences can be summarized by the "null ritual" [@gigerenzer_mindless_2004]:
+When I was reading Neal Stephensons [Baroque Cycle](https://en.wikipedia.org/wiki/The_Baroque_Cycle) I got really fascinated with the serious scepticism of the scientists portrayed in this book. They challenged every established fact and discovered new phenomena (think about cells discovered by Robert Hooke) and formulated new laws (e.g. Newton's laws). They were so successful because they not only put forward new ideas about a phenomenon but used empirical data to refute or verify them.
 
-1.  formulate your working hypothesis, e.g. male humans are (on average) heavier than female humans;
-2.  set up a statistical null hypothesis, e.g. male humans have the same weight as female humans (on average);
-3.  choose an appropriate test statistic, e.g. the $t$-statistic;
-4.  choose its distribution under the null hypothesis, e.g. the (central) $t$-distribution;
-5.  specify a significance level of 5% to either reject ($p \le 5\%$) or accept ($p > 5\%$) the null hypothesis;
-6.  gather data;
-7.  determine the $p$-value and compare it with the significance level
-8.  only if you reject the null hypothesis accept the alternative, your working, hypothesis and claim: "male humans are (on average) heavier than female humans ($p \le 5%$ one-sided $t$-test)".
+This is a long time ago. Nowadays, there are plenty of established facts that have been verified (or at least not refuted) by data. It looks like we are running out of new ideas that provide an explanation for the world around us. I strongly believe that this is not because of a lack of new ideas and data but a deficiency in the methods used to scrutinize data to test new ideas.
 
-This is pretty standard, so what is the problem? The problem is a fundamental one: the choice of the distribution of the test statistic under the null hypothesis depends on how the data is distributed [see e.g. the derivation of the $t$-distribution @student_probable_1908].
+My personal feeling is that we adapt the data to the analysis because we are confined to a bunch of methods that rely on prerequisites and assumptions on the data. So it has become quite natural to transform data to render it amendable for statistical analysis. In some cases it remains unclear whether these transformation destroy signal (acceptable but sad) or introduce signals (**not** acceptable) that were not there in the untransformed data. In the worst case scenario we use a transformation based on the theory that we want to challenge later in our test.
 
-$$
- \sum\mathfrak{p} = 1 
-$$
-
-asd
-
-At a fundamental level the criticism revolves around the validity of distributional assumptions underlying essentially every statistical hypothesis testing procedure.
+This blog is about a new method to empirically test new ideas: TOTal EMpiricism (TOTEM; you may want to consult our manuscript [A total empirical basis of science](https://arxiv.org/abs/2410.19866) at arxiv.org). There we outline a novel method that is radically different from established statistical methods. It allows for adapting the analysis to the data (and idea) and reestablishes the significance of "statistical significance".
