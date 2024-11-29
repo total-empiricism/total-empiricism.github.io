@@ -8,12 +8,4 @@ categories:
   - statistics
 ---
 
-Statisticians think along the lines of a distribution that generates data. The hope is that such a distribution is of a simple form, like the normal distribution. Isn't it a marvel: the normal distribution summarizes the data by just two numbers: the mean ($\mu$) and the variance ($\sigma^2$).
-
-```{r}
-#| label: fig:standardnormal
-#| fig-cap: "The standard normal distribution"
-#| echo: false
-curve(dnorm(x), from = -5, to = 5, n = 1001, frame = FALSE, ylab = "density")
-```
-
+Statisticians think along the lines of a distribution that generates data. The hope is that such a distribution is of a simple form, e.g. the normal distribution. Isn't it a marvel
