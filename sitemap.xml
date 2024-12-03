@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://total-empiricism.github.io/index.html</loc>
-    <lastmod>2024-11-27T19:01:38.179Z</lastmod>
+    <loc>https://total-empiricism.github.io/posts/2024-11-26-welcome-to-this-blog/index.html</loc>
+    <lastmod>2024-11-29T13:12:03.185Z</lastmod>
   </url>
   <url>
-    <loc>https://total-empiricism.github.io/posts/2024-11-26-welcome-to-this-blog/index.html</loc>
-    <lastmod>2024-11-27T21:57:25.403Z</lastmod>
+    <loc>https://total-empiricism.github.io/index.html</loc>
+    <lastmod>2024-11-29T13:12:03.185Z</lastmod>
   </url>
   <url>
     <loc>https://total-empiricism.github.io/about.html</loc>
-    <lastmod>2024-11-27T19:01:38.179Z</lastmod>
+    <lastmod>2024-11-29T13:12:03.185Z</lastmod>
+  </url>
+  <url>
+    <loc>https://total-empiricism.github.io/posts/2024-11-29-the-pathology-of-statistics/index.html</loc>
+    <lastmod>2024-12-03T15:04:15.817Z</lastmod>
   </url>
 </urlset>
