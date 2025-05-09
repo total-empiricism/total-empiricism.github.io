@@ -1,0 +1,197 @@
+---
+title: "Effect size estimates"
+author: "Ho Ryun Chung"
+description: ""
+date: "2025-05-09"
+categories: []
+---
+
+
+**Problem**: Comparison between two treatments A and B, which one is better?
+
+We compare the success rate of two treatments for kidney stones. This is the data
+```{r, echo = FALSE}
+data <- array(
+  data = c(6, 71, 36, 25, 81, 192, 234, 55), 
+  dim = c(2,2,2), 
+  dimnames = list(
+    stoneSize = c("small", "large"), 
+    treatment = c("A", "B"), 
+    success = c("no", "yes")
+  )
+)
+## make a contingency table
+tab <- round(prop.table(data, margin = c(1,2))[,,"yes"]* 100)
+tab <- cbind(tab, round(apply(data[,,2], 1, sum) / apply(data, 1, sum) * 100))
+
+
+tab[1,1] <- paste0("**", tab[1,1], "%", "**", " (", data[1,1,2], "/", sum(data[1,1,]), ")")
+tab[1,2] <- paste0(tab[1,2], "%", " (", data[1,2,2], "/", sum(data[1,2,]), ")")
+tab[2,1] <- paste0("**", tab[2,1],"%", "**", " (", data[2,1,2], "/", sum(data[2,1,]), ")")
+tab[2,2] <- paste0(tab[2,2], "%", " (", data[2,2,2], "/", sum(data[2,2,]), ")")
+tab[1,3] <-  paste0("**", tab[1,3], "%", "**", " (", sum(data[1,,2]), "/", sum(data[1,,]), ")")
+tab[2,3] <- paste0(tab[2,3], "%", " (", sum(data[2,,2]), "/", sum(data[2,,]), ")")
+
+both <- c(round(apply(data[,,2], 2, sum) / apply(data, 2, sum) * 100), NA)
+both[1] <- paste0(both[1], "%", " (", sum(data[,1,2], 2), "/", apply(data, 2, sum)[1], ")")
+both[2] <- paste0("**", both[2], "%", "**",  " (", sum(data[,2,2]), "/", apply(data, 2, sum)[2], ")")
+both[3] <- ""
+tab <- rbind(
+  tab,
+  both = both
+)
+knitr::kable(tab)
+```
+Treatment A is better (higher success rate) when used on small stones as well as on large stones, yet treatment B appears to be better considering both sizes together. This paradoxical result is called "Simpson's paradox".
+
+The effect size estimate of treatment A versus treatment B in the combined analysis is confounded by the tendencies of doctors to send cases with large stones to treatment A and cases with small stones to treatment B, while the treatment of small stones (irrespective of the treatment type) is more successfull than the treatment of large stones.
+
+In this sense the stone size acts as confounder for the effect size estimate of treatment B versus A. First, we try a generalized linear model to "remove" the confounding effect of the stone size on the treatment effect.
+
+First, we produce a data table `dt`
+```{r}
+dt <- data.frame(as.table(data))
+dt <- lapply(
+  seq_len(nrow(dt)),
+  function(i){
+    dt[rep(i, dt$Freq[i]), c("stoneSize", "treatment", "success")]
+  }
+)
+dt <- do.call(rbind, dt)
+```
+The data table `dt` now has `r nrow(dt)` rows, each one representing a patient, and records in the columns the stone size, the type of treatment, and treatment success. We use this data to fit a generalized linear model of the binomial family with identity link 
+```{r}
+linearGLM <- glm(
+  formula = success ~ stoneSize + treatment, 
+  family = binomial(link = "identity"), 
+  data = dt
+)
+summary(linearGLM)
+```
+This analysis deconfounds the effect size estimate for the treatment from the stone size at the level of the main effects. Treatment B reduces the success rate by `r abs(round(linearGLM$coefficients["treatmentB"] * 100, 1))`% consistent with the analysis stratified by stone size.
+
+However, given that the data shows a pronounced dependency between the stone size and the treatment it may be more realistic to also include the interaction term between stone size and treatment leading to a saturated model 
+```{r}
+saturatedGLM <- glm(
+  formula = success ~ stoneSize + treatment + stoneSize:treatment, 
+  family = binomial(link = "identity"), 
+  data = dt
+)
+summary(saturatedGLM)
+```
+This more detailed analysis reveals that treatment B reduces the success rate by `r abs(round(saturatedGLM$coefficients["treatmentB"] * 100, 1))`%, i.e. the (absolute) effect size estimate increases. However, while in the pure linear GLM the reduction of the treatment success was statistical significant at a significance level of 5% (p-value `r round(summary(linearGLM)$coefficients["treatmentB", "Pr(>|z|)"], 3)`; Wald-test?), the more detailed analysis was not (p-value `r round(summary(saturatedGLM)$coefficients["treatmentB", "Pr(>|z|)"], 3)`; Wald-test?). In both analyses the main stone size effect -- a reduction of `r abs(round(linearGLM$coefficients["stoneSizelarge"] * 100, 1))`% (linear) or `r abs(round(saturatedGLM$coefficients["treatmentB"] * 100, 1))`% (saturated) -- remains significant.
+
+**Empirical likelihood ratio test**
+```{r, message=FALSE,warning=FALSE}
+library(ELTseq)
+library(S4Vectors)
+m <- as.numeric(prop.table(data, margin = c(1,2))[,,"yes"])
+x <- data.frame(as.table(data[,,"yes"]))
+fullDesignMatrix <- model.matrix(~ stoneSize*treatment, data = x)
+(res <- solve(t(fullDesignMatrix) %*% fullDesignMatrix, t(fullDesignMatrix) %*% m))
+all.equal(res[ ,1], saturatedGLM$coefficients)
+```
+```{r}
+
+```
+```{r}
+entities <- data.frame(as.table(data))
+entities$empirical = entities$Freq / sum(entities$Freq)
+## group matching
+groups <- subset(x, select = c("stoneSize", "treatment"))
+entitiesToGroups <- match(DataFrame(subset(entities, select = c("stoneSize", "treatment"))), DataFrame(groups))
+groupFreq <- tapply(
+  entities$empirical, 
+  entitiesToGroups, 
+  sum
+)
+constraints <- solve(fullDesignMatrix %*% t(fullDesignMatrix), fullDesignMatrix %*% c(0,0,1,0))
+
+F <- rbind(
+  constraints[entitiesToGroups,1] * ifelse(entities$success == "yes", 1, 0) / groupFreq[entitiesToGroups],
+  entitiesToGroups == 1,
+  entitiesToGroups == 2,
+  entitiesToGroups == 3,
+  entitiesToGroups == 4
+)
+
+pH <- iProjector(F, eta = c(0, groupFreq), v = entities$empirical)
+iDiv <- iDivergence(entities$empirical, pH$p)
+pchisq(iDiv * 700 * 2, df = 1, lower.tail = FALSE)
+groupMeans <- tapply((entities$success == "yes") * pH$p, entitiesToGroups, sum) / groupFreq
+(res2 = solve(t(fullDesignMatrix) %*% fullDesignMatrix, t(fullDesignMatrix) %*% groupMeans))
+all.equal(res2[-4,1], linearGLM$coefficients)
+```
+
+```{r}
+constraints <- solve(fullDesignMatrix %*% t(fullDesignMatrix), fullDesignMatrix %*% c(0,0,0,1))
+
+F <- rbind(
+  constraints[entitiesToGroups,1] * ifelse(entities$success == "yes", 1, 0) / groupFreq[entitiesToGroups],
+  entitiesToGroups == 1,
+  entitiesToGroups == 2,
+  entitiesToGroups == 3,
+  entitiesToGroups == 4
+)
+
+pH <- iProjector(F, eta = c(0, groupFreq), v = entities$empirical)
+iDiv <- iDivergence(entities$empirical, pH$p)
+pchisq(iDiv * 700 * 2, df = 1, lower.tail = FALSE)
+groupMeans <- tapply((entities$success == "yes") * pH$p, entitiesToGroups, sum) / groupFreq
+(res2 = solve(t(fullDesignMatrix) %*% fullDesignMatrix, t(fullDesignMatrix) %*% groupMeans))
+```
+
+
+
+```{r, fig.height= 8}
+set.seed(123)
+beta <- c(rnorm(1, sd = 5), rnorm(3), rnorm(3, sd = 0.5), rnorm(1, sd = 0.25))
+#beta[5:8] = 0
+x = cbind(expand.grid(x1 = c(0,1), x2 = c(0,1), x3 = c(0,1)))
+dm2 <- model.matrix(~x1*x2*x3, data = x)
+
+k = 100
+nboot = 1000
+m = dm2 %*% beta
+xx <- x[rep(1:8, each = k), ]
+dm <- model.matrix(~ x1 * x2 * x3, data = xx)
+
+test <- lapply(
+  seq_len(nboot),
+  function(i){
+    y = as.numeric(
+      sapply(
+        m,
+        function(mean){
+          mean + rnorm(k, sd = 1)
+        }
+      )
+    )
+    mm <- tapply(y, rep(1:8, each = k), mean)
+    list(
+      betaFull = solve(t(dm2) %*% dm2, t(dm2) %*% mm)[,1],
+    
+      betaLinear = lm(y ~ x1 + x2 + x3, data = xx)$coef
+    )
+    
+    
+  }
+)
+
+
+bFull = do.call(cbind, lapply(test, function(x) x$betaFull))
+bLinear = do.call(cbind, lapply(test, function(x) x$betaLinear))
+
+## obviously this does not work
+plot(as.numeric(bFull), rep(1:8, nboot), xlim = range(bFull, bLinear), xlab = "beta", yaxt = "n", frame = FALSE, ylab = "coefficients")
+axis(2, at = 1:8, labels = rownames(bFull))
+points(as.numeric(bLinear), rep(1:4 + 0.3, nboot), col = 2)
+segments(beta, 1:8 - 0.5, beta, 1:8 + 0.5, col = "orange", lwd = 3)
+
+```
+
+
+
+
+
+
