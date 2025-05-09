@@ -1,0 +1,11 @@
+---
+title: "Empirical Likelihood Ratio Test"
+author: "Ho-Ryun Chung"
+description: ""
+date: "2025-04-03"
+categories: []
+---
+The empirical likelihood ratio test (ELT) leverages on the power of the likelihood ratio test without relying on a (parametric) statistical model. In this way the ELT liberates statistical hypothesis testing from statistical model misspecification that calls into question the validity of statistical inferences. 
+
+
+
